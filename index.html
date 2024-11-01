@@ -3,58 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detección de Máscara de Anonymous</title>
+    <title>Detección de Celular</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <!-- Añade la ruta de tu modelo exportado de Teachable Machine -->
-    <script src="modelo/model.json"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+        video { width: 100%; max-width: 600px; }
+        .alerta { color: red; font-weight: bold; font-size: 24px; }
+    </style>
 </head>
 <body>
-    <h1>Detección de Máscara de Anonymous</h1>
-    <video id="video" width="640" height="480" autoplay></video>
-    <div id="status"></div>
 
-    <script>
-        let model;
+    <h1>Detección de Uso de Celular</h1>
+    <video id="video" autoplay playsinline></video>
+    <div id="alerta" class="alerta"></div>
 
-        async function loadModel() {
-            model = await tf.loadLayersModel('modelo/model.json');
-        }
-
-        async function startCamera() {
-            const video = document.getElementById('video');
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            return new Promise(resolve => video.onloadedmetadata = () => resolve(video));
-        }
-
-        async function detectMask() {
-            const video = document.getElementById('video');
-            const status = document.getElementById('status');
-            
-            // Captura el cuadro actual del video y lo redimensiona para el modelo
-            const img = tf.browser.fromPixels(video).resizeNearestNeighbor([224, 224]).toFloat().expandDims();
-            
-            // Realiza la predicción
-            const predictions = await model.predict(img).data();
-
-            // Evalúa la predicción y muestra el resultado
-            if (predictions[0] > 0.6) { // Si la confianza es mayor al 60%
-                status.innerText = "¡Detectada máscara de Anonymous!";
-            } else {
-                status.innerText = "No se detecta la máscara de Anonymous.";
-            }
-
-            img.dispose();
-            requestAnimationFrame(detectMask);
-        }
-
-        async function main() {
-            await loadModel();
-            await startCamera();
-            detectMask();
-        }
-
-        main();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
