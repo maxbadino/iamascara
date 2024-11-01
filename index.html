@@ -7,14 +7,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <style>
-        video { width: 100%; max-width: 600px; }
+        video, canvas { width: 100%; max-width: 600px; }
         .alerta { color: red; font-weight: bold; font-size: 24px; }
+        #canvas { position: absolute; top: 0; left: 0; }
     </style>
 </head>
 <body>
 
     <h1>Detección de Uso de Celular</h1>
-    <video id="video" autoplay playsinline></video>
+    <div style="position: relative; display: inline-block;">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
     <div id="alerta" class="alerta"></div>
 
     <script src="script.js"></script>
