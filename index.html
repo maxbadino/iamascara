@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Máscara</title>
+</head>
+<body>
+    <h1>Detección de Máscara</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+
+    <script>
+        async function startCamera() {
+            const video = document.getElementById('video');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
+
+        startCamera();
+    </script>
+</body>
+</html>
