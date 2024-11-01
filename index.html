@@ -4,19 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detección de Máscara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 </head>
 <body>
     <h1>Detección de Máscara</h1>
     <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
 
     <script>
         async function startCamera() {
             const video = document.getElementById('video');
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
+            return new Promise(resolve => video.onloadedmetadata = () => resolve(video));
         }
 
-        startCamera();
+        async function detectMask(video, model) {
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+
+            async function detectFrame() {
+                // Dibuja el cuadro de la cámara en el canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Realiza la detección
+                const predictions = await model.detect(canvas);
+
+                // Filtra y dibuja las detecciones en el canvas
+                predictions.forEach(prediction => {
+                    if (prediction.class === 'person' && prediction.score > 0.6) {
+                        const [x, y, width, height] = prediction.bbox;
+                        context.strokeStyle = "red";
+                        context.lineWidth = 4;
+                        context.strokeRect(x, y, width, height);
+
+                        context.font = "18px Arial";
+                        context.fillStyle = "red";
+                        context.fillText("Posible máscara", x, y > 10 ? y - 5 : 10);
+                    }
+                });
+
+                requestAnimationFrame(detectFrame);
+            }
+
+            detectFrame();
+        }
+
+        async function main() {
+            const video = await startCamera();
+            const model = await cocoSsd.load();
+            detectMask(video, model);
+        }
+
+        main();
     </script>
 </body>
 </html>
